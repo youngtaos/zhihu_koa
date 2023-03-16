@@ -1,0 +1,26 @@
+{
+  "name": "koa1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/youngtaos/Zhihu_api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/youngtaos/Zhihu_api/issues"
+  },
+  "homepage": "https://github.com/youngtaos/Zhihu_api#readme",
+  "dependencies": {
+    "koa": "^2.14.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.21"
+  }
+}
