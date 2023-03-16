@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon app/index.js"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,13 @@
   },
   "homepage": "https://github.com/youngtaos/Zhihu_api#readme",
   "dependencies": {
-    "koa": "^2.14.1"
+    "cross-env": "^7.0.3",
+    "koa": "^2.14.1",
+    "koa-body": "^6.0.1",
+    "koa-body-parser": "^1.1.2",
+    "koa-json-error": "^3.1.2",
+    "koa-parameter": "^3.0.1",
+    "koa-router": "^12.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.21"
