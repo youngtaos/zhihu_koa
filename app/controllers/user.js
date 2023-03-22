@@ -4,10 +4,11 @@ require('dotenv').config();
 const secret = "yang123ghiogho"
 
 class userCtroller {
-    async checkUser(ctx, nex) {
+    async checkUser(ctx, next) {
         if (ctx.params.id !== ctx.state.user._id) {
             ctx.throw(403, '没有权限')
         }
+        await next()
     }
     async getUserList(ctx) {
         ctx.body = await User.find()
