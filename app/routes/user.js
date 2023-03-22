@@ -1,6 +1,20 @@
 const Router = require('koa-router')
 const router = new Router({ prefix: '/users' })
-const { getUserList, addUser, getUserById, editUserById, deleteUserById } = require('../controllers/user')
+const jsonwebtoken = require('jsonwebtoken')
+const { getUserList, addUser, getUserById, editUserById, deleteUserById, login, checkUser } = require('../controllers/user')
+const secret = "yang123ghiogho"
+const auth = async (ctx, next) => {
+    const { authorization = '' } = ctx.request.header;
+    const token = authorization.replace('Bearer ', '')
+    console.log(token)
+    try {
+        const user = jsonwebtoken.verify(token, secret)
+        ctx.state.user = user
+    } catch (err) {
+        ctx.throw(401, err.message)
+    }
+    await next()
+}
 
 router.get('/', getUserList)
 
@@ -8,8 +22,10 @@ router.post('/', addUser)
 
 router.get('/:id', getUserById)
 
-router.put('/:id', editUserById)
+router.patch('/:id', auth, checkUser, editUserById)
 
-router.delete('/:id', deleteUserById)
+router.delete('/:id', auth, checkUser, deleteUserById)
+
+router.post('/login', login)
 
 module.exports = router

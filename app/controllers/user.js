@@ -1,40 +1,67 @@
-const db = [{ "name": 'yts' }]
+const User = require('../models/user')
+const jsonwebtoken = require('jsonwebtoken')
+require('dotenv').config();
+const secret = "yang123ghiogho"
 
 class userCtroller {
-    getUserList(ctx) {
-        ctx.body = db
+    async checkUser(ctx, nex) {
+        if (ctx.params.id !== ctx.state.user._id) {
+            ctx.throw(403, '没有权限')
+        }
     }
-    addUser(ctx) {
+    async getUserList(ctx) {
+        ctx.body = await User.find()
+    }
+    async addUser(ctx) {
         ctx.verifyParams({
             name: { type: 'string', required: true },
-            age: { type: 'number', required: false }
+            age: { type: 'number', required: false },
+            password: { type: 'string', required: true },
         })
-        db.push(ctx.request.body)
-        ctx.body = ctx.request.body
-    }
-    getUserById(ctx) {
-        if (ctx.params.id * 1 >= db.length) {
-            ctx.throw(412)
+        const { name } = ctx.request.body
+        const repeatedUser = await User.findOne({ name })
+        if (repeatedUser) {
+            ctx.throw("用户已经存在")
         }
-        ctx.body = db[ctx.params.id * 1]
+        const user = await new User(ctx.request.body).save()
+        ctx.body = user
     }
-    editUserById(ctx) {
-        if (ctx.params.id * 1 >= db.length) {
-            ctx.throw(412)
+    async getUserById(ctx) {
+        const user = await User.findById(ctx.params.id)
+        if (!user) {
+            ctx.throw('用户不存在')
         }
+        ctx.body = user
+    }
+    async editUserById(ctx) {
+        ctx.verifyParams({
+            name: { type: 'string', required: false },
+            age: { type: 'number', required: false },
+            password: { type: 'string', required: false },
+        })
+        const user = await User.findByIdAndUpdate(ctx.params.id, ctx.request.body)
+        if (!user) { ctx.throw('用户不存在') }
+        ctx.body = user
+    }
+    async deleteUserById(ctx) {
+        const user = await User.findByIdAndDelete(ctx.params.id)
+        if (!user) { ctx.throw('用户不存在') }
+        ctx.body = user
+    }
+
+    async login(ctx) {
         ctx.verifyParams({
             name: { type: 'string', required: true },
-            age: { type: 'number', required: false }
+            password: { type: 'string', required: true },
         })
-        db[ctx.params.id * 1] = ctx.request.body
-        ctx.body = ctx.request.body
-    }
-    deleteUserById(ctx) {
-        if (ctx.params.id * 1 >= db.length) {
-            ctx.throw(412)
+        const user = await User.findOne(ctx.request.body)
+        if (!user) {
+            ctx.throw("登录失败")
         }
-        db.splice(ctx.params.id * 1, 1)
-        ctx.status = 204
+        const { _id, name } = user
+        const token = jsonwebtoken.sign({ _id, name }, secret, { expiresIn: '1d' })
+        console.log(token)
+        ctx.body = { token }
     }
 }
 
