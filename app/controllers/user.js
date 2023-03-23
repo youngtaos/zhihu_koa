@@ -3,7 +3,7 @@ const jsonwebtoken = require('jsonwebtoken')
 require('dotenv').config();
 const secret = "yang123ghiogho"
 
-class userCtroller {
+class userController {
     async checkUser(ctx, next) {
         if (ctx.params.id !== ctx.state.user._id) {
             ctx.throw(403, '没有权限')
@@ -66,4 +66,4 @@ class userCtroller {
     }
 }
 
-module.exports = new userCtroller()
+module.exports = new userController()

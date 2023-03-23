@@ -3,18 +3,7 @@ const router = new Router({ prefix: '/users' })
 const jwt = require('koa-jwt')
 const { getUserList, addUser, getUserById, editUserById, deleteUserById, login, checkUser } = require('../controllers/user')
 const secret = "yang123ghiogho"
-// const auth = async (ctx, next) => {
-//     const { authorization = '' } = ctx.request.header;
-//     const token = authorization.replace('Bearer ', '')
-//     console.log(token)
-//     try {
-//         const user = jsonwebtoken.verify(token, secret)
-//         ctx.state.user = user
-//     } catch (err) {
-//         ctx.throw(401, err.message)
-//     }
-//     await next()
-// }
+
 const auth = jwt({ secret })
 
 router.get('/', getUserList)
