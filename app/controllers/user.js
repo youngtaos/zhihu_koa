@@ -10,6 +10,14 @@ class userController {
         }
         await next()
     }
+    async checkUserExist(ctx, next) {
+        const user = await User.findById(ctx.params.id)
+        if (!user) {
+            ctx.throw(404, "用户不存在")
+        }
+        await next()
+    }
+
     async getUserList(ctx) {
         ctx.body = await User.find()
     }
