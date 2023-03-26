@@ -84,7 +84,6 @@ class userController {
 
     async follow(ctx) {
         const me = await User.findById(ctx.state.user._id).select('+following')
-        console.log(me)
         if (!me.following.map(id => id.toString()).includes(ctx.params.id)) {
             me.following.push(ctx.params.id)
             me.save()
@@ -100,6 +99,11 @@ class userController {
             me.save()
         }
         ctx.status = 204
+    }
+
+    async listFollower(ctx) {
+        const followers = await User.find({ following: ctx.params.id })
+        ctx.body = followers
     }
 }
 
