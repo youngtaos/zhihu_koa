@@ -19,7 +19,10 @@ class userController {
     }
 
     async getUserList(ctx) {
-        ctx.body = await User.find()
+        const { per_Page = 10 } = ctx.query
+        const page = Math.max(ctx.query.page * 1, 1) - 1
+        const perPage = Math.max(per_Page * 1, 1)
+        ctx.body = await User.find().limit(perPage).skip(page * perPage)
     }
     async addUser(ctx) {
         ctx.verifyParams({
@@ -36,7 +39,7 @@ class userController {
         ctx.body = user
     }
     async getUserById(ctx) {
-        const { fields } = ctx.query;
+        const { fields = '' } = ctx.query;
         const selectFields = fields.split(";").filter(f => f).map(f => '+' + f).join('')
         const user = await User.findById(ctx.params.id).select(selectFields)
         if (!user) {
