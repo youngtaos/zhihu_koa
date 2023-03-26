@@ -28,7 +28,9 @@ class userController {
         ctx.body = user
     }
     async getUserById(ctx) {
-        const user = await User.findById(ctx.params.id)
+        const { fields } = ctx.query;
+        const selectFields = fields.split(";").filter(f => f).map(f => '+' + f).join('')
+        const user = await User.findById(ctx.params.id).select(selectFields)
         if (!user) {
             ctx.throw('用户不存在')
         }
@@ -39,6 +41,13 @@ class userController {
             name: { type: 'string', required: false },
             age: { type: 'number', required: false },
             password: { type: 'string', required: false },
+            avatar_url: { type: 'string', required: false },
+            gender: { type: 'string', required: false },
+            headline: { type: 'string', required: false },
+            locations: { type: 'array', itemType: "string", required: false },
+            business: { type: 'string', required: false },
+            employments: { type: 'array', itemType: "Object", required: false },
+            educations: { type: 'array', itemType: "Object", required: false },
         })
         const user = await User.findByIdAndUpdate(ctx.params.id, ctx.request.body)
         if (!user) { ctx.throw('用户不存在') }
@@ -63,6 +72,34 @@ class userController {
         const token = jsonwebtoken.sign({ _id, name }, secret, { expiresIn: '1d' })
         console.log(token)
         ctx.body = { token }
+    }
+
+    async listFollowing(ctx) {
+        const user = await User.findById(ctx.params.id).select('+following').populate('following')
+        if (!user) {
+            ctx.throw(404, '此用户不存在')
+        }
+        ctx.body = user.following
+    }
+
+    async follow(ctx) {
+        const me = await User.findById(ctx.state.user._id).select('+following')
+        console.log(me)
+        if (!me.following.map(id => id.toString()).includes(ctx.params.id)) {
+            me.following.push(ctx.params.id)
+            me.save()
+        }
+        ctx.status = 204
+    }
+
+    async unFollow(ctx) {
+        const me = await User.findById(ctx.state.user._id).select('+following')
+        const index = me.following.map(id => id.toString()).indexOf(ctx.params.id)
+        if (index > -1) {
+            me.following.splice(index, 1)
+            me.save()
+        }
+        ctx.status = 204
     }
 }
 
