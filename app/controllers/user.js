@@ -1,4 +1,5 @@
 const User = require('../models/user')
+const Question = require('../models/question')
 const jsonwebtoken = require('jsonwebtoken')
 require('dotenv').config();
 const secret = "yang123ghiogho"
@@ -156,6 +157,11 @@ class userController {
             me.save()
         }
         ctx.status = 204
+    }
+
+    async listUserQuestions(ctx) {
+        const questions = await Question.find({ questioner: ctx.params.id })
+        ctx.body = questions
     }
 }
 

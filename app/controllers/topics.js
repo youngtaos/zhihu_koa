@@ -1,3 +1,4 @@
+const question = require('../models/question');
 const Topic = require('../models/topics');
 const user = require('../models/user');
 require('dotenv').config();
@@ -33,8 +34,8 @@ class topicController {
             introduction: { type: 'string', required: false },
         })
         const { name } = ctx.request.body
-        const repeatedUser = await Topic.findOne({ name })
-        if (repeatedUser) {
+        const repeatedTopic = await Topic.findOne({ name })
+        if (repeatedTopic) {
             ctx.throw("该词条已经存在")
         }
         const topic = await new Topic(ctx.request.body).save()
@@ -55,6 +56,11 @@ class topicController {
     async listTopicFollower(ctx) {
         const followers = await user.find({ followingTopic: ctx.params.id })
         ctx.body = followers
+    }
+
+    async listQuestions(ctx) {
+        const questions = await question.find({ topics: ctx.params.id })
+        ctx.body = questions
     }
 }
 
