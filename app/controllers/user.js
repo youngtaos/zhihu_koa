@@ -22,7 +22,7 @@ class userController {
         const { per_Page = 10 } = ctx.query
         const page = Math.max(ctx.query.page * 1, 1) - 1
         const perPage = Math.max(per_Page * 1, 1)
-        ctx.body = await User.find().limit(perPage).skip(page * perPage)
+        ctx.body = await User.find({ name: new RegExp(ctx.query.q) }).limit(perPage).skip(page * perPage)
     }
     async addUser(ctx) {
         ctx.verifyParams({
@@ -41,7 +41,17 @@ class userController {
     async getUserById(ctx) {
         const { fields = '' } = ctx.query;
         const selectFields = fields.split(";").filter(f => f).map(f => '+' + f).join('')
+        const populateStr = fields.split(";").filter(f => f).map(f => {
+            if (f === 'employments') {
+                return 'employments.company employments.job'
+            }
+            if (f === 'educations') {
+                return 'educations.school educations.major'
+            }
+            return f
+        }).join(' ')
         const user = await User.findById(ctx.params.id).select(selectFields)
+            .populate(populateStr)
         if (!user) {
             ctx.throw('用户不存在')
         }
@@ -81,7 +91,6 @@ class userController {
         }
         const { _id, name } = user
         const token = jsonwebtoken.sign({ _id, name }, secret, { expiresIn: '1d' })
-        console.log(token)
         ctx.body = { token }
     }
 

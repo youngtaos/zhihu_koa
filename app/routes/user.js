@@ -14,7 +14,7 @@ router.post('/', addUser)
 
 router.get('/:id', getUserById)
 router.patch('/:id', auth, checkUser, editUserById)
-router.delete('/:id', auth, checkUser, deleteUserById)
+router.delete('/:id', deleteUserById)
 router.get('/:id/following', listFollowing)
 router.get('/:id/follower', listFollower)
 
