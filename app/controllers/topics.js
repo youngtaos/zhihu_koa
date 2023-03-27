@@ -1,7 +1,16 @@
-const Topic = require('../models/topics')
+const Topic = require('../models/topics');
+const user = require('../models/user');
 require('dotenv').config();
 
 class topicController {
+    async checkTopicExist(ctx, next) {
+        const topic = await Topic.findById(ctx.params.id)
+        if (!topic) {
+            ctx.throw(404, "词条不存在")
+        }
+        await next()
+    }
+
     async getTopicList(ctx) {
         const { per_Page = 10 } = ctx.query
         const page = Math.max(ctx.query.page * 1, 1) - 1
@@ -41,6 +50,11 @@ class topicController {
         const topic = await Topic.findByIdAndUpdate(ctx.params.id, ctx.request.body)
         if (!topic) { ctx.throw('该词条不存在') }
         ctx.body = topic
+    }
+
+    async listTopicFollower(ctx) {
+        const followers = await user.find({ followingTopic: ctx.params.id })
+        ctx.body = followers
     }
 }
 

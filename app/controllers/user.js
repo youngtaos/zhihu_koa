@@ -94,6 +94,9 @@ class userController {
         ctx.body = { token }
     }
 
+
+
+    //关注，取消关注用户，获取关注列表
     async listFollowing(ctx) {
         const user = await User.findById(ctx.params.id).select('+following').populate('following')
         if (!user) {
@@ -124,6 +127,35 @@ class userController {
     async listFollower(ctx) {
         const followers = await User.find({ following: ctx.params.id })
         ctx.body = followers
+    }
+
+
+    //关注词条，取消关注词条，获取关注的词条列表
+    async listFollowingTopic(ctx) {
+        const user = await User.findById(ctx.params.id).select('+followingTopic').populate('followingTopic')
+        if (!user) {
+            ctx.throw(404, '此用户不存在')
+        }
+        ctx.body = user.followingTopic
+    }
+
+    async followTopic(ctx) {
+        const me = await User.findById(ctx.state.user._id).select('+followingTopic')
+        if (!me.followingTopic.map(id => id.toString()).includes(ctx.params.id)) {
+            me.followingTopic.push(ctx.params.id)
+            me.save()
+        }
+        ctx.status = 204
+    }
+
+    async unFollowTopic(ctx) {
+        const me = await User.findById(ctx.state.user._id).select('+followingTopic')
+        const index = me.followingTopic.map(id => id.toString()).indexOf(ctx.params.id)
+        if (index > -1) {
+            me.followingTopic.splice(index, 1)
+            me.save()
+        }
+        ctx.status = 204
     }
 }
 
