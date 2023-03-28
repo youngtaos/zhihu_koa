@@ -1,5 +1,6 @@
 const User = require('../models/user')
 const Question = require('../models/question')
+const Answer = require('../models/answer')
 const jsonwebtoken = require('jsonwebtoken')
 require('dotenv').config();
 const secret = "yang123ghiogho"
@@ -154,6 +155,65 @@ class userController {
         const index = me.followingTopic.map(id => id.toString()).indexOf(ctx.params.id)
         if (index > -1) {
             me.followingTopic.splice(index, 1)
+            me.save()
+        }
+        ctx.status = 204
+    }
+
+    //点赞答案，踩答案，取消点赞、踩，获取点赞，踩的答案列表
+    async listUpAnswer(ctx) {
+        const user = await User.findById(ctx.params.id).select('+upAnswer').populate('upAnswer')
+        if (!user) {
+            ctx.throw(404, '此用户不存在')
+        }
+        ctx.body = user.upAnswer
+    }
+
+    async upAnswer(ctx, next) {
+        const me = await User.findById(ctx.state.user._id).select('+upAnswer')
+        if (!me.upAnswer.map(id => id.toString()).includes(ctx.params.id)) {
+            me.upAnswer.push(ctx.params.id)
+            me.save()
+            await Answer.findByIdAndUpdate(ctx.params.id, { $inc: { voteCount: 1 } })
+        }
+        ctx.status = 204
+        next()
+    }
+
+    async unUpAnswer(ctx) {
+        const me = await User.findById(ctx.state.user._id).select('+upAnswer')
+        const index = me.upAnswer.map(id => id.toString()).indexOf(ctx.params.id)
+        if (index > -1) {
+            me.upAnswer.splice(index, 1)
+            me.save()
+            await Answer.findByIdAndUpdate(ctx.params.id, { $inc: { voteCount: -1 } })
+        }
+        ctx.status = 204
+    }
+
+    async listDownAnswer(ctx) {
+        const user = await User.findById(ctx.params.id).select('+downAnswer').populate('downAnswer')
+        if (!user) {
+            ctx.throw(404, '此用户不存在')
+        }
+        ctx.body = user.downAnswer
+    }
+
+    async downAnswer(ctx, next) {
+        const me = await User.findById(ctx.state.user._id).select('+downAnswer')
+        if (!me.downAnswer.map(id => id.toString()).includes(ctx.params.id)) {
+            me.downAnswer.push(ctx.params.id)
+            me.save()
+        }
+        ctx.status = 204
+        next()
+    }
+
+    async unDownAnswer(ctx) {
+        const me = await User.findById(ctx.state.user._id).select('+downAnswer')
+        const index = me.downAnswer.map(id => id.toString()).indexOf(ctx.params.id)
+        if (index > -1) {
+            me.downAnswer.splice(index, 1)
             me.save()
         }
         ctx.status = 204

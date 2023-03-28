@@ -1,9 +1,10 @@
 const Answer = require('../models/answer');
+const User = require('../models/user')
 
 class AnswerController {
     async checkAnswerExist(ctx, next) {
         const answer = await Answer.findById(ctx.params.id)
-        if (!answer || answer.questionId !== ctx.params.questionId) {
+        if (!answer || (ctx.params.questionId && (answer.questionId !== ctx.params.questionId))) {
             ctx.throw(404, "答案不存在")
         }
         await next()
@@ -54,6 +55,11 @@ class AnswerController {
     async deleteAnswerById(ctx) {
         await Answer.findByIdAndRemove(ctx.params.id)
         ctx.status = 204
+    }
+
+    async listUpper(ctx) {
+        const followers = await User.find({ upAnswer: ctx.params.id })
+        ctx.body = followers
     }
 }
 

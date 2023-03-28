@@ -12,6 +12,9 @@ const answerSchema = new Schema({
     },
     questionId: {
         type: String, required: true
+    },
+    voteCount: {
+        type: Number, required: true, default: 0
     }
 })
 

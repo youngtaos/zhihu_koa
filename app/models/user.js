@@ -37,6 +37,14 @@ const userSchema = new Schema({
         type: [{ type: Schema.Types.ObjectId, ref: 'Topic' }],
         select: false
     },
+    upAnswer: {
+        type: [{ type: Schema.Types.ObjectId, ref: 'Answer' }],
+        select: false
+    },
+    downAnswer: {
+        type: [{ type: Schema.Types.ObjectId, ref: 'Answer' }],
+        select: false
+    },
 })
 
 module.exports = model('User', userSchema)

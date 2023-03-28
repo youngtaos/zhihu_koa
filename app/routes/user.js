@@ -6,8 +6,11 @@ const { getUserList, addUser, getUserById,
     checkUser, checkUserExist, listFollowing,
     follow, unFollow, listFollower,
     followTopic, unFollowTopic, listFollowingTopic,
-    listUserQuestions } = require('../controllers/user')
+    listUserQuestions,
+    listUpAnswer, upAnswer, unUpAnswer,
+    listDownAnswer, downAnswer, unDownAnswer } = require('../controllers/user')
 const { checkTopicExist } = require('../controllers/topics')
+const { checkAnswerExist } = require('../controllers/answer')
 const secret = "yang123ghiogho"
 
 const auth = jwt({ secret })
@@ -29,6 +32,15 @@ router.delete('/following/:id', auth, checkUserExist, unFollow)
 router.get('/:id/followingTopic', listFollowingTopic)
 router.put('/followingTopic/:id', auth, checkTopicExist, followTopic)
 router.delete('/followingTopic/:id', auth, checkTopicExist, unFollowTopic)
+
+router.get('/:id/upAnswer', listUpAnswer)
+router.put('/upAnswer/:id', auth, checkAnswerExist, upAnswer, unDownAnswer)
+router.delete('/upAnswer/:id', auth, checkAnswerExist, unUpAnswer)
+
+router.get('/:id/downAnswer', listDownAnswer)
+router.put('/downAnswer/:id', auth, checkAnswerExist, downAnswer, unUpAnswer)
+router.delete('/downAnswer/:id', auth, checkAnswerExist, unDownAnswer)
+
 
 router.post('/login', login)
 
