@@ -30,9 +30,11 @@ class CommentController {
         const perPage = Math.max(per_Page * 1, 1)
         const q = new RegExp(ctx.query.q)
         const { questionId, answerId } = ctx.params
-        ctx.body = await Comment.find({ content: q, questionId, answerId })
+        const { rootCommentId } = ctx.query
+        ctx.body = await Comment.find({ content: q, questionId, answerId, rootCommentId })
             .limit(perPage).skip(page * perPage)
             .populate('commentator')
+            .populate('replyTo')
     }
     async getCommentById(ctx) {
         const { fields = '' } = ctx.query;
@@ -46,6 +48,8 @@ class CommentController {
     async addComment(ctx) {
         ctx.verifyParams({
             content: { type: 'string', required: true },
+            rootCommentId: { type: 'string', required: false },
+            replyTo: { type: 'string', required: false },
         })
         const { questionId, answerId } = ctx.params
         const comment = await new Comment({ ...ctx.request.body, commentator: ctx.state.user._id, questionId, answerId }).save()
@@ -56,7 +60,8 @@ class CommentController {
         ctx.verifyParams({
             content: { type: 'string', required: true },
         })
-        const comment = await Comment.findByIdAndUpdate(ctx.params.id, ctx.request.body)
+        const { content } = ctx.request.body
+        const comment = await Comment.findByIdAndUpdate(ctx.params.id, { content })
         if (!comment) { ctx.throw('该评论不存在') }
         ctx.body = comment
     }
