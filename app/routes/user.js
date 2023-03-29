@@ -8,7 +8,8 @@ const { getUserList, addUser, getUserById,
     followTopic, unFollowTopic, listFollowingTopic,
     listUserQuestions,
     listUpAnswer, upAnswer, unUpAnswer,
-    listDownAnswer, downAnswer, unDownAnswer } = require('../controllers/user')
+    listDownAnswer, downAnswer, unDownAnswer,
+    collectedAnswer, listCollectedAnswer, unCollectedAnswer } = require('../controllers/user')
 const { checkTopicExist } = require('../controllers/topics')
 const { checkAnswerExist } = require('../controllers/answer')
 const secret = "yang123ghiogho"
@@ -40,6 +41,10 @@ router.delete('/upAnswer/:id', auth, checkAnswerExist, unUpAnswer)
 router.get('/:id/downAnswer', listDownAnswer)
 router.put('/downAnswer/:id', auth, checkAnswerExist, downAnswer, unUpAnswer)
 router.delete('/downAnswer/:id', auth, checkAnswerExist, unDownAnswer)
+
+router.get('/:id/collectedAnswer', listCollectedAnswer)
+router.put('/collectedAnswer/:id', auth, checkAnswerExist, collectedAnswer)
+router.delete('/collectedAnswer/:id', auth, checkAnswerExist, unCollectedAnswer)
 
 
 router.post('/login', login)

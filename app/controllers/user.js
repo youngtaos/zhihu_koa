@@ -219,6 +219,35 @@ class userController {
         ctx.status = 204
     }
 
+    //列出收藏的答案，收藏答案，取消收藏答案
+    async listCollectedAnswer(ctx) {
+        const user = await User.findById(ctx.params.id).select('+collectedAnswer').populate('collectedAnswer')
+        if (!user) {
+            ctx.throw(404, '此用户不存在')
+        }
+        ctx.body = user.collectedAnswer
+    }
+
+    async collectedAnswer(ctx, next) {
+        const me = await User.findById(ctx.state.user._id).select('+collectedAnswer')
+        if (!me.collectedAnswer.map(id => id.toString()).includes(ctx.params.id)) {
+            me.collectedAnswer.push(ctx.params.id)
+            me.save()
+        }
+        ctx.status = 204
+        next()
+    }
+
+    async unCollectedAnswer(ctx) {
+        const me = await User.findById(ctx.state.user._id).select('+collectedAnswer')
+        const index = me.collectedAnswer.map(id => id.toString()).indexOf(ctx.params.id)
+        if (index > -1) {
+            me.collectedAnswer.splice(index, 1)
+            me.save()
+        }
+        ctx.status = 204
+    }
+
     async listUserQuestions(ctx) {
         const questions = await Question.find({ questioner: ctx.params.id })
         ctx.body = questions
