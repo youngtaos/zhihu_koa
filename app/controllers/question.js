@@ -1,5 +1,5 @@
 const Question = require('../models/question');
-const user = require('../models/user');
+const User = require('../models/user');
 require('dotenv').config();
 
 class QuestionController {
@@ -25,7 +25,7 @@ class QuestionController {
         const perPage = Math.max(per_Page * 1, 1)
         const q = new RegExp(ctx.query.q)
         ctx.body = await Question.find({ $or: [{ name: q }, { description: q }] })
-            .limit(perPage).skip(page * perPage)
+            .limit(perPage).skip(page * perPage).populate('questioner')
     }
     async getQuestionById(ctx) {
         const { fields = '' } = ctx.query;
@@ -42,6 +42,7 @@ class QuestionController {
             description: { type: 'string', required: false },
         })
         const question = await new Question({ ...ctx.request.body, questioner: ctx.state.user._id }).save()
+        await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { questioningNumber: 1 } })
         ctx.body = question
     }
 
@@ -57,6 +58,7 @@ class QuestionController {
 
     async deleteQuestionById(ctx) {
         await Question.findByIdAndRemove(ctx.params.id)
+        await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { questioningNumber: -1 } })
         ctx.status = 204
     }
 }

@@ -16,6 +16,6 @@ const answerSchema = new Schema({
     voteCount: {
         type: Number, required: true, default: 0
     }
-})
+}, { timestamps: true })
 
 module.exports = model('Answer', answerSchema)

@@ -93,7 +93,7 @@ class userController {
         }
         const { _id, name } = user
         const token = jsonwebtoken.sign({ _id, name }, secret, { expiresIn: '1d' })
-        ctx.body = { token }
+        ctx.body = { token, _id }
     }
 
 
@@ -112,6 +112,8 @@ class userController {
         if (!me.following.map(id => id.toString()).includes(ctx.params.id)) {
             me.following.push(ctx.params.id)
             me.save()
+            await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { followerNumber: 1 } })
+            await User.findByIdAndUpdate(ctx.params.id, { $inc: { followingNumber: 1 } })
         }
         ctx.status = 204
     }
@@ -122,6 +124,8 @@ class userController {
         if (index > -1) {
             me.following.splice(index, 1)
             me.save()
+            await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { followerNumber: -1 } })
+            await User.findByIdAndUpdate(ctx.params.id, { $inc: { followingNumber: -1 } })
         }
         ctx.status = 204
     }
@@ -233,6 +237,7 @@ class userController {
         if (!me.collectedAnswer.map(id => id.toString()).includes(ctx.params.id)) {
             me.collectedAnswer.push(ctx.params.id)
             me.save()
+            await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { collectedAnswerNumber: 1 } })
         }
         ctx.status = 204
         next()
@@ -244,6 +249,7 @@ class userController {
         if (index > -1) {
             me.collectedAnswer.splice(index, 1)
             me.save()
+            await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { collectedAnswerNumber: -1 } })
         }
         ctx.status = 204
     }

@@ -7,7 +7,7 @@ const userSchema = new Schema({
     name: { type: String, required: true },
     password: { type: String, required: true, select: false },
     age: { type: Number, required: false },
-    avatar_url: { type: String },
+    avatar_url: { type: String, select: true },
     gender: { type: String, enum: ['male', 'female'], default: 'male' },
     headline: { type: String },
     locations: { type: [{ type: Schema.Types.ObjectId, ref: 'Topic' }], select: false },
@@ -48,7 +48,22 @@ const userSchema = new Schema({
     collectedAnswer: {
         type: [{ type: Schema.Types.ObjectId, ref: 'Answer' }],
         select: false
-    }
-})
+    },
+    followerNumber: {
+        type: Number, required: false, default: 0,
+    },
+    followingNumber: {
+        type: Number, required: false, default: 0,
+    },
+    questioningNumber: {
+        type: Number, required: false, default: 0,
+    },
+    answeringNumber: {
+        type: Number, required: false, default: 0,
+    },
+    collectedAnswerNumber: {
+        type: Number, required: false, default: 0,
+    },
+}, { timestamps: true })
 
 module.exports = model('User', userSchema)

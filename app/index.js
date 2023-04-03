@@ -30,6 +30,14 @@ app.use(koaBody({
 }))
 app.use(parameter(app))
 routing(app)
+app.use(async (ctx, next) => {
+    // 设置响应头，允许指定域名访问
+    ctx.set('Access-Control-Allow-Origin', 'https://yutousi.top');
+    ctx.set('Access-Control-Allow-Headers', 'Content-Type');
+    await next();
+});
+
+
 
 
 app.listen(7000, () => {

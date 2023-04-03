@@ -40,6 +40,7 @@ class AnswerController {
             content: { type: 'string', required: true },
         })
         const answer = await new Answer({ ...ctx.request.body, answerer: ctx.state.user._id, questionId: ctx.params.questionId }).save()
+        await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { answeringNumber: 1 } })
         ctx.body = answer
     }
 
@@ -54,6 +55,7 @@ class AnswerController {
 
     async deleteAnswerById(ctx) {
         await Answer.findByIdAndRemove(ctx.params.id)
+        await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { answeringNumber: -1 } })
         ctx.status = 204
     }
 
