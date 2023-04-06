@@ -89,7 +89,10 @@ class userController {
         })
         const user = await User.findOne(ctx.request.body)
         if (!user) {
-            ctx.throw("登录失败")
+            const user = await new User(ctx.request.body).save()
+            const { _id, name } = user
+            const token = jsonwebtoken.sign({ _id, name }, secret, { expiresIn: '1d' })
+            ctx.body = { token, _id }
         }
         const { _id, name } = user
         const token = jsonwebtoken.sign({ _id, name }, secret, { expiresIn: '1d' })
