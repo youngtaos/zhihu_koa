@@ -13,7 +13,7 @@ const answerSchema = new Schema({
     questionId: {
         type: Schema.Types.ObjectId,
         ref: 'Question',
-        required: true
+        required: true,
     },
     voteCount: {
         type: Number, required: true, default: 0

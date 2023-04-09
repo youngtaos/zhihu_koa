@@ -19,9 +19,10 @@ const auth = jwt({ secret })
 router.get('/', getUserList)
 
 router.post('/', addUser)
+router.post('/login', login)
 
 router.get('/:id', getUserById)
-router.patch('/:id', auth, checkUser, editUserById)
+router.post('/:id', auth, checkUser, editUserById)
 router.delete('/:id', deleteUserById)
 
 router.get('/:id/following', listFollowing)
@@ -47,7 +48,7 @@ router.put('/collectedAnswer/:id', auth, checkAnswerExist, collectedAnswer)
 router.delete('/collectedAnswer/:id', auth, checkAnswerExist, unCollectedAnswer)
 
 
-router.post('/login', login)
+
 
 
 module.exports = router

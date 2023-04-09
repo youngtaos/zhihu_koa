@@ -47,7 +47,7 @@ const userSchema = new Schema({
     },
     collectedAnswer: {
         type: [{ type: Schema.Types.ObjectId, ref: 'Answer' }],
-        select: false
+        // select: false
     },
     followerNumber: {
         type: Number, required: false, default: 0,

@@ -25,12 +25,13 @@ class QuestionController {
         const perPage = Math.max(per_Page * 1, 1)
         const q = new RegExp(ctx.query.q)
         ctx.body = await Question.find({ $or: [{ name: q }, { description: q }] })
-            .limit(perPage).skip(page * perPage).populate('questioner')
+            .limit(perPage).skip(page * perPage).populate('questioner').populate('topics')
     }
     async getQuestionById(ctx) {
         const { fields = '' } = ctx.query;
         const selectFields = fields.split(";").filter(f => f).map(f => '+' + f).join('')
-        const question = await Question.findById(ctx.params.id).select(selectFields).populate('questioner topics')
+        const question = await Question.findById(ctx.params.id).select(selectFields)
+            .populate('questioner').populate('topics')
         if (!question) {
             ctx.throw('该问题不存在')
         }

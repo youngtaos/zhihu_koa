@@ -228,7 +228,9 @@ class userController {
 
     //列出收藏的答案，收藏答案，取消收藏答案
     async listCollectedAnswer(ctx) {
-        const user = await User.findById(ctx.params.id).select('+collectedAnswer').populate('collectedAnswer')
+        const user = await User.findById(ctx.params.id)
+            .select('+collectedAnswer')
+            .populate('collectedAnswer')
         if (!user) {
             ctx.throw(404, '此用户不存在')
         }

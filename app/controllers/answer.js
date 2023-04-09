@@ -1,10 +1,11 @@
 const Answer = require('../models/answer');
+const Question = require('../models/question');
 const User = require('../models/user')
 
 class AnswerController {
     async checkAnswerExist(ctx, next) {
         const answer = await Answer.findById(ctx.params.id)
-        if (!answer || (ctx.params.questionId && (answer.questionId !== ctx.params.questionId))) {
+        if (!answer || (ctx.params.questionId && (answer.questionId.toString() !== ctx.params.questionId))) {
             ctx.throw(404, "答案不存在")
         }
         await next()
@@ -41,6 +42,7 @@ class AnswerController {
         })
         const answer = await new Answer({ ...ctx.request.body, answerer: ctx.state.user._id, questionId: ctx.params.questionId }).save()
         await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { answeringNumber: 1 } })
+        await Question.findByIdAndUpdate(ctx.params.questionId, { $inc: { answeredNumber: 1 } })
         ctx.body = answer
     }
 
@@ -55,6 +57,7 @@ class AnswerController {
 
     async deleteAnswerById(ctx) {
         await Answer.findByIdAndRemove(ctx.params.id)
+        await Question.findByIdAndUpdate(ctx.params.questionId, { $inc: { answeredNumber: -1 } })
         await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { answeringNumber: -1 } })
         ctx.status = 204
     }
