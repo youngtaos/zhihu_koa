@@ -20,7 +20,7 @@ class QuestionController {
     }
 
     async getQuestionList(ctx) {
-        const { per_Page = 10 } = ctx.query
+        const { per_Page = 5 } = ctx.query
         const page = Math.max(ctx.query.page * 1, 1) - 1
         const perPage = Math.max(per_Page * 1, 1)
         const q = new RegExp(ctx.query.q)
