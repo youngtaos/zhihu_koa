@@ -59,7 +59,11 @@ class topicController {
     }
 
     async listQuestions(ctx) {
+        const { per_Page = 5 } = ctx.query
+        const page = Math.max(ctx.query.page * 1, 1) - 1
+        const perPage = Math.max(per_Page * 1, 1)
         const questions = await question.find({ topics: ctx.params.id })
+            .limit(perPage).skip(page * perPage)
         ctx.body = questions
     }
 }

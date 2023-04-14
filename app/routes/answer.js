@@ -1,13 +1,14 @@
 const Router = require('koa-router')
 const router = new Router({ prefix: '/questions/:questionId/answer' })
 const jwt = require('koa-jwt')
-const { getAnswerList, addAnswer, getAnswerById, deleteAnswerById,
+const { getNewAnswerList, getHotAnswerList, addAnswer, getAnswerById, deleteAnswerById,
     editAnswerById, checkAnswerExist, checkAnswerer, listUpper } = require('../controllers/answer')
 const secret = "yang123ghiogho"
 
 const auth = jwt({ secret })
 
-router.get('/', getAnswerList)
+router.get('/', getNewAnswerList)
+router.get('/hot', getHotAnswerList)
 
 router.post('/', auth, addAnswer)
 

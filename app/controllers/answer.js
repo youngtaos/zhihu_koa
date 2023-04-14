@@ -19,14 +19,26 @@ class AnswerController {
         await next()
     }
 
-    async getAnswerList(ctx) {
+    //返回最新数据
+    async getNewAnswerList(ctx) {
         const { per_Page = 10 } = ctx.query
         const page = Math.max(ctx.query.page * 1, 1) - 1
         const perPage = Math.max(per_Page * 1, 1)
         const q = new RegExp(ctx.query.q)
         ctx.body = await Answer.find({ content: q, questionId: ctx.params.questionId })
-            .limit(perPage).skip(page * perPage)
+            .limit(perPage).skip(page * perPage).sort({ createdAt: -1 })
     }
+
+    //返回最热的答案
+    async getHotAnswerList(ctx) {
+        const { per_Page = 10 } = ctx.query
+        const page = Math.max(ctx.query.page * 1, 1) - 1
+        const perPage = Math.max(per_Page * 1, 1)
+        const q = new RegExp(ctx.query.q)
+        ctx.body = await Answer.find({ content: q, questionId: ctx.params.questionId })
+            .limit(perPage).skip(page * perPage).sort({ voteCount: 1 })
+    }
+
     async getAnswerById(ctx) {
         const { fields = '' } = ctx.query;
         const selectFields = fields.split(";").filter(f => f).map(f => '+' + f).join('')
