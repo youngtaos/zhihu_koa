@@ -9,9 +9,10 @@ const { getUserList, addUser, getUserById,
     listUserQuestions,
     listUpAnswer, upAnswer, unUpAnswer,
     listDownAnswer, downAnswer, unDownAnswer,
-    collectedAnswer, listCollectedAnswer, unCollectedAnswer } = require('../controllers/user')
+    collectedQuestion, listCollectedQuestion, unCollectedQuestion } = require('../controllers/user')
 const { checkTopicExist } = require('../controllers/topics')
 const { checkAnswerExist } = require('../controllers/answer')
+const { checkQuestionExist } = require('../controllers/question')
 const secret = "yang123ghiogho"
 
 const auth = jwt({ secret })
@@ -43,9 +44,9 @@ router.get('/:id/downAnswer', listDownAnswer)
 router.put('/downAnswer/:id', auth, checkAnswerExist, downAnswer, unUpAnswer)
 router.delete('/downAnswer/:id', auth, checkAnswerExist, unDownAnswer)
 
-router.get('/:id/collectedAnswer', listCollectedAnswer)
-router.put('/collectedAnswer/:id', auth, checkAnswerExist, collectedAnswer)
-router.delete('/collectedAnswer/:id', auth, checkAnswerExist, unCollectedAnswer)
+router.get('/:id/collectedQuestion', listCollectedQuestion)
+router.put('/collectedQuestion/:id', auth, checkQuestionExist, collectedQuestion)
+router.delete('/collectedQuestion/:id', auth, checkQuestionExist, unCollectedQuestion)
 
 
 

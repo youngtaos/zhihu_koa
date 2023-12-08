@@ -226,35 +226,37 @@ class userController {
         ctx.status = 204
     }
 
-    //列出收藏的答案，收藏答案，取消收藏答案
-    async listCollectedAnswer(ctx) {
+    //列出收藏的问题，收藏问题，取消收藏问题
+    async listCollectedQuestion(ctx) {
         const user = await User.findById(ctx.params.id)
-            .select('+collectedAnswer')
-            .populate('collectedAnswer')
+            .select('+collectedQuestion')
+            .populate('collectedQuestion')
         if (!user) {
             ctx.throw(404, '此用户不存在')
         }
-        ctx.body = user.collectedAnswer
+        ctx.body = user.collectedQuestion
     }
 
-    async collectedAnswer(ctx, next) {
-        const me = await User.findById(ctx.state.user._id).select('+collectedAnswer')
-        if (!me.collectedAnswer.map(id => id.toString()).includes(ctx.params.id)) {
-            me.collectedAnswer.push(ctx.params.id)
+    async collectedQuestion(ctx, next) {
+        const me = await User.findById(ctx.state.user._id).select('+collectedQuestion')
+        if (!me.collectedQuestion.map(id => id.toString()).includes(ctx.params.id)) {
+            me.collectedQuestion.push(ctx.params.id)
             me.save()
-            await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { collectedAnswerNumber: 1 } })
+            await Question.findByIdAndUpdate(ctx.params.questionId, { $inc: { followerNumber: 1 } })
+            await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { collectedQuestionNumber: 1 } })
         }
         ctx.status = 204
         next()
     }
 
-    async unCollectedAnswer(ctx) {
-        const me = await User.findById(ctx.state.user._id).select('+collectedAnswer')
-        const index = me.collectedAnswer.map(id => id.toString()).indexOf(ctx.params.id)
+    async unCollectedQuestion(ctx) {
+        const me = await User.findById(ctx.state.user._id).select('+collectedQuestion')
+        const index = me.collectedQuestion.map(id => id.toString()).indexOf(ctx.params.id)
         if (index > -1) {
-            me.collectedAnswer.splice(index, 1)
+            me.collectedQuestion.splice(index, 1)
             me.save()
-            await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { collectedAnswerNumber: -1 } })
+            await Question.findByIdAndUpdate(ctx.params.questionId, { $inc: { followerNumber: -1 } })
+            await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { collectedQuestionNumber: -1 } })
         }
         ctx.status = 204
     }

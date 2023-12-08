@@ -25,7 +25,7 @@ class QuestionController {
         const perPage = Math.max(per_Page * 1, 1)
         const q = new RegExp(ctx.query.q)
         ctx.body = await Question.find({ $or: [{ name: q }, { description: q }] })
-            .limit(perPage).skip(page * perPage).populate('questioner').populate('topics')
+            .limit(perPage).skip(page * perPage).populate('questioner').populate('topics').populate('topics')
     }
     async getQuestionById(ctx) {
         const { fields = '' } = ctx.query;
@@ -61,6 +61,11 @@ class QuestionController {
         await Question.findByIdAndRemove(ctx.params.id)
         await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { questioningNumber: -1 } })
         ctx.status = 204
+    }
+
+    async listQuestionFollower(ctx) {
+        const followers = await user.find({ collectedQuestion: ctx.params.id })
+        ctx.body = followers
     }
 }
 

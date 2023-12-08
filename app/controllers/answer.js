@@ -53,6 +53,7 @@ class AnswerController {
             content: { type: 'string', required: true },
         })
         const answer = await new Answer({ ...ctx.request.body, answerer: ctx.state.user._id, questionId: ctx.params.questionId }).save()
+        console.log(answer)
         await User.findByIdAndUpdate(ctx.state.user._id, { $inc: { answeringNumber: 1 } })
         await Question.findByIdAndUpdate(ctx.params.questionId, { $inc: { answeredNumber: 1 } })
         ctx.body = answer

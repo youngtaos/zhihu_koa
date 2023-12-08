@@ -45,8 +45,8 @@ const userSchema = new Schema({
         type: [{ type: Schema.Types.ObjectId, ref: 'Answer' }],
         select: false
     },
-    collectedAnswer: {
-        type: [{ type: Schema.Types.ObjectId, ref: 'Answer' }],
+    collectedQuestion: {
+        type: [{ type: Schema.Types.ObjectId, ref: 'Question' }],
         // select: false
     },
     followerNumber: {
@@ -59,9 +59,6 @@ const userSchema = new Schema({
         type: Number, required: false, default: 0,
     },
     answeringNumber: {
-        type: Number, required: false, default: 0,
-    },
-    collectedAnswerNumber: {
         type: Number, required: false, default: 0,
     },
 }, { timestamps: true })

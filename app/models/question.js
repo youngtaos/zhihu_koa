@@ -18,6 +18,14 @@ const questionSchema = new Schema({
     answeredNumber: {
         type: Number, required: false, default: 0,
     },
+    followerNumber: {
+        type: Number, required: false, default: 0,
+    },
+    follower: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
 }, { timestamps: true })
 
 module.exports = model('Question', questionSchema)
